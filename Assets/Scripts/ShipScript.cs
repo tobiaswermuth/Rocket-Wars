@@ -5,12 +5,11 @@ public class ShipScript : MonoBehaviour {
 	[SerializeField]
 	private float movementCost = 1f;
 	[SerializeField]
-	private float acceleration = 3f;
-	[SerializeField]
 	private Rigidbody2D myRigidbody;
 
-	private int lastPlayer = 0;
+	private int lastPlayer = -1;
 	private ArrayList pressedPlayers = new ArrayList();
+	private float[] pressedDirectionlast = new float[]{0f, 0f};
 
 	[SerializeField]
 	private GameObject player1Inventory;
@@ -29,33 +28,38 @@ public class ShipScript : MonoBehaviour {
 	void FixedUpdate () {
 		GameObject nearestLevelPiece = levelSpawner.getNearestLevelPiece (transform.position);
 		float[] pathXs = nearestLevelPiece.GetComponent<LevelPieceScript> ().getNearestTwoPathXs (transform.position);
-		//print (pathXs[0] + "-1");
-		//print (pathXs[1] + "+1");
+
 		Vector3 position = transform.position;
-		if (position.y < nearestLevelPiece.transform.position.y - nearestLevelPiece.GetComponent<BoxCollider2D> ().size.y / 2 - GetComponent<CircleCollider2D>().radius) {
-			if (Input.GetKeyDown (KeyCode.LeftArrow) && getPlayerEnergy (1) >= movementCost && transform.position.x != pathXs [0]) {
-				position.x = pathXs [0];
-				removePlayerEnergy (1, movementCost);
+		if (position.y < nearestLevelPiece.transform.position.y - nearestLevelPiece.GetComponent<BoxCollider2D> ().size.y / 2 - GetComponent<CircleCollider2D> ().radius) {
+			if (transform.position.x != pathXs [0]) {
+				if (Time.time - pressedDirectionlast[0] > 0.1 && Input.GetKeyDown (KeyCode.A) && getPlayerEnergy (0) >= movementCost) {
+					position.x = pathXs [0];
+					pressedDirectionlast[0] = Time.time;
+					removePlayerEnergy (0, movementCost);
+				}
+				if (Time.time - pressedDirectionlast[1] > 0.1 && Input.GetKeyDown (KeyCode.LeftArrow) && getPlayerEnergy (1) >= movementCost) {
+					position.x = pathXs [0];
+					pressedDirectionlast[1] = Time.time;
+					removePlayerEnergy (1, movementCost);
+				}
 			}
-			if (Input.GetKeyDown (KeyCode.A) && getPlayerEnergy (-1) >= movementCost && transform.position.x != pathXs [0]) {
-				position.x = pathXs [0];
-				removePlayerEnergy (-1, movementCost);
+			if (transform.position.x != pathXs [1]) {
+				if (Time.time - pressedDirectionlast[0] > 0.1 && Input.GetKeyDown (KeyCode.D) && getPlayerEnergy (0) >= movementCost) {
+					position.x = pathXs [1];
+					pressedDirectionlast[0] = Time.time;
+					removePlayerEnergy (0, movementCost);
+				}
+				if (Time.time - pressedDirectionlast[1] > 0.1 && Input.GetKeyDown (KeyCode.RightArrow) && getPlayerEnergy (1) >= movementCost) {
+					position.x = pathXs [1];
+					pressedDirectionlast[1] = Time.time;
+					removePlayerEnergy (1, movementCost);
+				}
 			}
-			if (Input.GetKeyDown (KeyCode.RightArrow) && getPlayerEnergy (1) >= movementCost && transform.position.x != pathXs [1]) {
-				position.x = pathXs [1];
-				removePlayerEnergy (1, movementCost);
-			}
-			if (Input.GetKeyDown (KeyCode.D) && getPlayerEnergy (-1) >= movementCost && transform.position.x != pathXs [1]) {
-				position.x = pathXs [1];
-				removePlayerEnergy (-1, movementCost);
-			}
-			print ("yes");
-		} else {
-			print ("no");
 		}
-		if (Input.GetKeyDown(KeyCode.S) && !pressedPlayers.Contains(-1)) {
-			lastPlayer = -1;
-			pressedPlayers.Add(-1);
+
+		if (Input.GetKeyDown(KeyCode.S) && !pressedPlayers.Contains(0)) {
+			lastPlayer = 0;
+			pressedPlayers.Add(0);
 		}
 		if (Input.GetKeyDown(KeyCode.DownArrow) && !pressedPlayers.Contains(1)) {
 			lastPlayer = 1;
@@ -66,11 +70,11 @@ public class ShipScript : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.CompareTag("Part")) {
-			if (lastPlayer == 0) {
-				lastPlayer = (new int[]{-1, 1})[Random.Range(0, 2)];
+			if (lastPlayer == -1) {
+				lastPlayer = Random.Range(0, 2);
 			}
 
-			GameObject inventory = lastPlayer == -1 ? player1Inventory : player2Inventory;
+			GameObject inventory = lastPlayer == 0 ? player1Inventory : player2Inventory;
 			GameObject inventoryPart = findInventoryPart(inventory, other.gameObject);
 			if (inventoryPart) {
 				Destroy(inventoryPart);
@@ -101,7 +105,7 @@ public class ShipScript : MonoBehaviour {
 	}
 
 	float getPlayerEnergy(int player) {
-		GameObject inventory = player == -1 ? player1Inventory : player2Inventory;
+		GameObject inventory = player == 0 ? player1Inventory : player2Inventory;
 		float aggregatedEnergy = 0;
 
 		foreach(Transform child in inventory.transform) {
@@ -115,7 +119,7 @@ public class ShipScript : MonoBehaviour {
 	}
 
 	void addPlayerEnergy(int player, float energy) {
-		GameObject inventory = player == -1 ? player1Inventory : player2Inventory;
+		GameObject inventory = player == 0 ? player1Inventory : player2Inventory;
 
 		Transform[] allChildren = inventory.GetComponentsInChildren<Transform>();
 		System.Array.Reverse (allChildren);
@@ -136,7 +140,7 @@ public class ShipScript : MonoBehaviour {
 	}
 
 	void removePlayerEnergy(int player, float energy) {
-		GameObject inventory = player == -1 ? player1Inventory : player2Inventory;
+		GameObject inventory = player == 0 ? player1Inventory : player2Inventory;
 		
 		foreach(Transform child in inventory.transform) {
 			PartScript inventoryPartScript = child.gameObject.GetComponent<PartScript>();
