@@ -66,6 +66,9 @@ public class ShipScript : MonoBehaviour {
 			pressedPlayers.Add(1);
 		}
 		transform.position = position;
+
+		addPlayerEnergy (0, 0.005f);
+		addPlayerEnergy (1, 0.005f);
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
