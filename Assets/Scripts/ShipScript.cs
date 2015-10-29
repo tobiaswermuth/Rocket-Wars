@@ -107,7 +107,10 @@ public class ShipScript : MonoBehaviour {
 	void addPlayerEnergy(int player, float energy) {
 		GameObject inventory = player == -1 ? player1Inventory : player2Inventory;
 
-		foreach(Transform child in inventory.transform) {
+		Transform[] allChildren = inventory.GetComponentsInChildren<Transform>();
+		System.Array.Reverse (allChildren);
+
+		foreach(Transform child in allChildren) {
 			PartScript inventoryPartScript = child.gameObject.GetComponent<PartScript>();
 			if (inventoryPartScript) {
 				float energyToAddLeft = (inventoryPartScript.getEnergy() + energy) - inventoryPartScript.maxEnergy;
