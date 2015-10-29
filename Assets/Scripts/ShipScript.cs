@@ -17,6 +17,9 @@ public class ShipScript : MonoBehaviour {
 	[SerializeField]
 	private GameObject player2Inventory;
 
+	[SerializeField]
+	private LevelSpawnerScript levelSpawner;
+
 
 	// Use this for initialization
 	void Start () {
@@ -24,21 +27,31 @@ public class ShipScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		if (Input.GetKey(KeyCode.LeftArrow) && getPlayerEnergy(1) > movementCost) {
-			myRigidbody.AddForce(Vector2.left  * acceleration);
-			removePlayerEnergy(1, movementCost);
-		}
-		if (Input.GetKey(KeyCode.A) && getPlayerEnergy(-1) > movementCost) {
-			myRigidbody.AddForce(Vector2.left  * acceleration);
-			removePlayerEnergy(-1, movementCost);
-		}
-		if (Input.GetKey(KeyCode.RightArrow) && getPlayerEnergy(1) > movementCost) {
-			myRigidbody.AddForce(Vector2.right * acceleration);
-			removePlayerEnergy(1, movementCost);
-		}
-		if (Input.GetKey(KeyCode.D) && getPlayerEnergy(-1) > movementCost) {
-			myRigidbody.AddForce(Vector2.right * acceleration);
-			removePlayerEnergy(-1, movementCost);
+		GameObject nearestLevelPiece = levelSpawner.getNearestLevelPiece (transform.position);
+		float[] pathXs = nearestLevelPiece.GetComponent<LevelPieceScript> ().getNearestTwoPathXs (transform.position);
+		//print (pathXs[0] + "-1");
+		//print (pathXs[1] + "+1");
+		Vector3 position = transform.position;
+		if (position.y < nearestLevelPiece.transform.position.y - nearestLevelPiece.GetComponent<BoxCollider2D> ().size.y / 2 - GetComponent<CircleCollider2D>().radius) {
+			if (Input.GetKeyDown (KeyCode.LeftArrow) && getPlayerEnergy (1) >= movementCost && transform.position.x != pathXs [0]) {
+				position.x = pathXs [0];
+				removePlayerEnergy (1, movementCost);
+			}
+			if (Input.GetKeyDown (KeyCode.A) && getPlayerEnergy (-1) >= movementCost && transform.position.x != pathXs [0]) {
+				position.x = pathXs [0];
+				removePlayerEnergy (-1, movementCost);
+			}
+			if (Input.GetKeyDown (KeyCode.RightArrow) && getPlayerEnergy (1) >= movementCost && transform.position.x != pathXs [1]) {
+				position.x = pathXs [1];
+				removePlayerEnergy (1, movementCost);
+			}
+			if (Input.GetKeyDown (KeyCode.D) && getPlayerEnergy (-1) >= movementCost && transform.position.x != pathXs [1]) {
+				position.x = pathXs [1];
+				removePlayerEnergy (-1, movementCost);
+			}
+			print ("yes");
+		} else {
+			print ("no");
 		}
 		if (Input.GetKeyDown(KeyCode.S) && !pressedPlayers.Contains(-1)) {
 			lastPlayer = -1;
@@ -48,6 +61,7 @@ public class ShipScript : MonoBehaviour {
 			lastPlayer = 1;
 			pressedPlayers.Add(1);
 		}
+		transform.position = position;
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
@@ -70,11 +84,9 @@ public class ShipScript : MonoBehaviour {
 			lastPlayer = 0;
 		} else if (other.CompareTag("Obstacle")) {
 			Vector3 position = transform.position;
-			if (transform.position.x - other.transform.position.x > 0) {
-				position.x += GetComponent<CircleCollider2D>().radius;
-			} else {
-				position.x -= GetComponent<CircleCollider2D>().radius;
-			}
+			GameObject nearestLevelPiece = levelSpawner.getNearestLevelPiece (transform.position);
+			float[] pathXs = nearestLevelPiece.GetComponent<LevelPieceScript> ().getNearestTwoPathXs (transform.position);
+			position.x = pathXs[Random.Range(0, 2)];
 			transform.position = position;
 		}
 	}

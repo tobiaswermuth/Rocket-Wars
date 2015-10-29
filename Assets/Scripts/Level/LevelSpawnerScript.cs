@@ -23,9 +23,23 @@ public class LevelSpawnerScript : MonoBehaviour {
 			nextPosition.y += nextLevelObject.GetComponent<BoxCollider2D>().size.y / 2;
 
 			lastLevelObject = Instantiate(nextLevelObject, nextPosition, Quaternion.identity) as GameObject;
+			lastLevelObject.transform.SetParent(transform.parent);
 			lastLevelObject.transform.localScale = transform.parent.localScale;
 
 			nextLevelObject = levelPrefabs[Random.Range(0, levelPrefabs.Length)];
 		}
+	}
+
+	public GameObject getNearestLevelPiece(Vector3 position) {
+		LevelPieceScript[] levelPieces = transform.parent.GetComponentsInChildren<LevelPieceScript>();
+		GameObject nearestLevelPiece = levelPieces[levelPieces.Length - 1].gameObject;
+		foreach (LevelPieceScript levelPiece in levelPieces) {
+			if (levelPiece.transform.position.y > position.y - levelPiece.GetComponent<BoxCollider2D>().size.y / 2) {
+				if (levelPiece.transform.position.y < nearestLevelPiece.transform.position.y) {
+					nearestLevelPiece = levelPiece.gameObject;
+				} 
+			}
+		}
+		return nearestLevelPiece.gameObject;
 	}
 }
