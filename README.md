@@ -4,7 +4,7 @@
 Each player has an inventory full of items
 on his side of the screen (Player 1 left, Player 2 right) he wants to empty.
 In order to achieve this, a player has to catch the item
-which currently is at the bottom of his inventory (marked with yellow color).
+which currently is at the bottom of his inventory (marked with orange color).
 
 Both players sit in the same boat (grey circle).
 
@@ -12,7 +12,7 @@ Player 1 can move the boat with the the keys A and D,
 player 2 with the left and right arrow.
 Moving the boat costs the player energy
 which you can see by looking at the
-color of the inventory (green => full energy, red => empty).
+color of the inventory (gmore red => more energy consumed).
 Players can get new energy by catching items they don’t need.
 
 To catch an item,
