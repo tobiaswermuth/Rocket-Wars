@@ -67,8 +67,8 @@ public class ShipScript : MonoBehaviour {
 		}
 		transform.position = position;
 
-		addPlayerEnergy (0, 0.005f);
-		addPlayerEnergy (1, 0.005f);
+		addPlayerEnergy (0, 0.002f);
+		addPlayerEnergy (1, 0.002f);
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
@@ -80,7 +80,10 @@ public class ShipScript : MonoBehaviour {
 			GameObject inventory = lastPlayer == 0 ? player1Inventory : player2Inventory;
 			GameObject inventoryPart = findInventoryPart(inventory, other.gameObject);
 			if (inventoryPart) {
-				Destroy(inventoryPart);
+				inventoryPart.GetComponent<PartScript>().collected = true;
+				Vector3 markerTransformPosition = inventory.GetComponentInChildren<MarkerScript>().gameObject.transform.position;
+				markerTransformPosition.y = findNextPart(inventory).transform.position.y;
+				inventory.GetComponentInChildren<MarkerScript>().gameObject.transform.position = markerTransformPosition;
 			} else {
 				addPlayerEnergy(lastPlayer, other.GetComponent<PartScript>().getEnergy());
 			}
@@ -88,7 +91,7 @@ public class ShipScript : MonoBehaviour {
 			Destroy(other.gameObject);
 
 			pressedPlayers = new ArrayList();
-			lastPlayer = 0;
+			lastPlayer = -1;
 		} else if (other.CompareTag("Obstacle")) {
 			Vector3 position = transform.position;
 			GameObject nearestLevelPiece = levelSpawner.getNearestLevelPiece (transform.position);
@@ -100,9 +103,27 @@ public class ShipScript : MonoBehaviour {
 
 	GameObject findInventoryPart(GameObject inventory, GameObject part) {
 		PartScript partScript = part.GetComponent<PartScript>();
-		PartScript inventoryPartScript = inventory.GetComponentsInChildren<PartScript>()[0];
-		if (inventoryPartScript.partIdentifier == partScript.partIdentifier) {
-			return inventoryPartScript.gameObject;
+		PartScript[] parts = inventory.GetComponentsInChildren<PartScript>();
+		print (parts.Length);
+		foreach (PartScript inventoryPart in parts) {
+			if (!inventoryPart.collected) {
+				if (inventoryPart.partIdentifier == partScript.partIdentifier) {
+					return inventoryPart.gameObject;
+				}
+				print (inventoryPart.partIdentifier);
+				print (partScript.partIdentifier);
+				return null;
+			}
+		}
+		return null;
+	}
+
+	GameObject findNextPart(GameObject inventory) {
+		PartScript[] parts = inventory.GetComponentsInChildren<PartScript>();
+		foreach (PartScript part in parts) {
+			if (!part.collected) {
+				return part.gameObject;
+			}
 		}
 		return null;
 	}
@@ -113,7 +134,7 @@ public class ShipScript : MonoBehaviour {
 
 		foreach(Transform child in inventory.transform) {
 			PartScript inventoryPartScript = child.gameObject.GetComponent<PartScript>();
-			if (inventoryPartScript) {
+			if (inventoryPartScript && !inventoryPartScript.collected) {
 				aggregatedEnergy += inventoryPartScript.getEnergy();
 			}
 		}
@@ -129,7 +150,7 @@ public class ShipScript : MonoBehaviour {
 
 		foreach(Transform child in allChildren) {
 			PartScript inventoryPartScript = child.gameObject.GetComponent<PartScript>();
-			if (inventoryPartScript) {
+			if (inventoryPartScript && !inventoryPartScript.collected) {
 				float energyToAddLeft = (inventoryPartScript.getEnergy() + energy) - inventoryPartScript.maxEnergy;
 				if (energyToAddLeft < 0) {
 					inventoryPartScript.setEnergy(inventoryPartScript.getEnergy() + energy);
@@ -147,7 +168,7 @@ public class ShipScript : MonoBehaviour {
 		
 		foreach(Transform child in inventory.transform) {
 			PartScript inventoryPartScript = child.gameObject.GetComponent<PartScript>();
-			if (inventoryPartScript) {
+			if (inventoryPartScript && !inventoryPartScript.collected) {
 				float energyToRemoveLeft = energy - inventoryPartScript.getEnergy();
 				if (energyToRemoveLeft < 0) {
 					inventoryPartScript.setEnergy(inventoryPartScript.getEnergy() - energy);

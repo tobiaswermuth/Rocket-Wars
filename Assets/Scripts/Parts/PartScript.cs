@@ -10,6 +10,7 @@ public class PartScript : MonoBehaviour {
 	public float maxEnergy = 100f;
 
 	private float energy = 0;
+	public bool collected = false;
 
 	// Use this for initialization
 	void Start () {
@@ -18,10 +19,14 @@ public class PartScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Color color = spriteRenderer.color;
-		color.g = energy / maxEnergy;
-		color.b = energy / maxEnergy;
-		spriteRenderer.color = color;
+		if (collected) {
+			spriteRenderer.color = new Color(0, 1, 0);
+		} else {
+			Color color = spriteRenderer.color;
+			color.g = energy / maxEnergy;
+			color.b = energy / maxEnergy;
+			spriteRenderer.color = color;
+		}
 	}
 
 	public float getEnergy() {
