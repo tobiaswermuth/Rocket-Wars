@@ -98,6 +98,7 @@ public class ShipScript : MonoBehaviour {
 
 		if (winner != -1) {
 			myRigidbody.AddForce((winner == 0 ? Vector2.left : Vector2.right) * 50);
+			(winner == 0 ? player1Inventory : player2Inventory).GetComponentsInChildren<PartScript>()[0].GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 100));
 		}
 	}
 
@@ -123,6 +124,7 @@ public class ShipScript : MonoBehaviour {
 			} else {
 				addPlayerEnergy(lastPlayer, other.GetComponent<PartScript>().getEnergy());
 			}
+
 			Destroy(other.gameObject);
 
 			pressedPlayers = new ArrayList();
@@ -174,7 +176,6 @@ public class ShipScript : MonoBehaviour {
 
 	void startRocket(GameObject inventory) {
 		foreach (PartScript part in inventory.GetComponentsInChildren<PartScript>()) {
-			part.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1000));
 			part.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
 		}
 		foreach (ParticleSystem ps in inventory.GetComponentsInChildren<PartScript>()[0].GetComponentsInChildren<ParticleSystem>()) {
