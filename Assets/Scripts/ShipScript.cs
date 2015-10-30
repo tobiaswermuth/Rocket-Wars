@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class ShipScript : MonoBehaviour {
@@ -94,7 +94,6 @@ public class ShipScript : MonoBehaviour {
 			} else {
 				addPlayerEnergy(lastPlayer, other.GetComponent<PartScript>().getEnergy());
 			}
-
 			Destroy(other.gameObject);
 
 			pressedPlayers = new ArrayList();
@@ -142,6 +141,10 @@ public class ShipScript : MonoBehaviour {
 	void startRocket(GameObject inventory) {
 		foreach (PartScript part in inventory.GetComponentsInChildren<PartScript>()) {
 			part.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1000));
+			part.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+		}
+		foreach (ParticleSystem ps in inventory.GetComponentsInChildren<PartScript>()[0].GetComponentsInChildren<ParticleSystem>()) {
+			ps.Play();
 		}
 	}
 
