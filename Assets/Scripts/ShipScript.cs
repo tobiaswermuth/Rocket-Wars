@@ -114,14 +114,11 @@ public class ShipScript : MonoBehaviour {
 	GameObject findInventoryPart(GameObject inventory, GameObject part) {
 		PartScript partScript = part.GetComponent<PartScript>();
 		PartScript[] parts = inventory.GetComponentsInChildren<PartScript>();
-		print (parts.Length);
 		foreach (PartScript inventoryPart in parts) {
 			if (!inventoryPart.collected) {
 				if (inventoryPart.partIdentifier == partScript.partIdentifier) {
 					return inventoryPart.gameObject;
 				}
-				print (inventoryPart.partIdentifier);
-				print (partScript.partIdentifier);
 				return null;
 			}
 		}
