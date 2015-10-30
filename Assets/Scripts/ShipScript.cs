@@ -83,9 +83,14 @@ public class ShipScript : MonoBehaviour {
 			GameObject inventoryPart = findInventoryPart(inventory, other.gameObject);
 			if (inventoryPart) {
 				inventoryPart.GetComponent<PartScript>().collected = true;
-				Vector3 markerTransformPosition = inventory.GetComponentInChildren<MarkerScript>().gameObject.transform.position;
-				markerTransformPosition.y = findNextPart(inventory).transform.position.y;
-				inventory.GetComponentInChildren<MarkerScript>().gameObject.transform.position = markerTransformPosition;
+				if (findNextPart(inventory)) {
+					Vector3 markerTransformPosition = inventory.GetComponentInChildren<MarkerScript>().gameObject.transform.position;
+					markerTransformPosition.y = findNextPart(inventory).transform.position.y;
+					inventory.GetComponentInChildren<MarkerScript>().gameObject.transform.position = markerTransformPosition;
+				} else {
+					Destroy (inventory.GetComponentInChildren<MarkerScript>().gameObject);
+					startRocket(inventory);
+				}
 			} else {
 				addPlayerEnergy(lastPlayer, other.GetComponent<PartScript>().getEnergy());
 			}
@@ -132,6 +137,12 @@ public class ShipScript : MonoBehaviour {
 			}
 		}
 		return null;
+	}
+
+	void startRocket(GameObject inventory) {
+		foreach (PartScript part in inventory.GetComponentsInChildren<PartScript>()) {
+			part.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1000));
+		}
 	}
 
 	float getPlayerEnergy(int player) {
