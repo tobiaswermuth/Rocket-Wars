@@ -11,8 +11,13 @@ public class LevelPieceScript : MonoBehaviour {
 		foreach(Transform child in transform){
 			if (child.CompareTag("Part Placeholder")) {
 				GameObject nextPartPrefab = possibleParts[Random.Range(0, possibleParts.Length)];
+				if (Random.Range(0, 3) == 2) {
+					nextPartPrefab = ShipScript.instance.findNextPart(ShipScript.instance.randomPlayerInventory());
+				}
+
 				GameObject part = Instantiate(nextPartPrefab, child.position, Quaternion.identity) as GameObject;
 				part.transform.SetParent(transform);
+				part.GetComponent<Rigidbody2D>().isKinematic = true;
 
 				Destroy(child.gameObject);
 			}

@@ -19,9 +19,11 @@ public class ShipScript : MonoBehaviour {
 	[SerializeField]
 	private LevelSpawnerScript levelSpawner;
 
+	public static ShipScript instance;
 
 	// Use this for initialization
 	void Start () {
+		instance = this;
 	}
 	
 	// Update is called once per frame
@@ -101,6 +103,10 @@ public class ShipScript : MonoBehaviour {
 		}
 	}
 
+	public GameObject randomPlayerInventory() {
+		return Random.Range(0, 2) == 0 ? player1Inventory : player2Inventory;
+	}
+
 	GameObject findInventoryPart(GameObject inventory, GameObject part) {
 		PartScript partScript = part.GetComponent<PartScript>();
 		PartScript[] parts = inventory.GetComponentsInChildren<PartScript>();
@@ -118,7 +124,7 @@ public class ShipScript : MonoBehaviour {
 		return null;
 	}
 
-	GameObject findNextPart(GameObject inventory) {
+	public GameObject findNextPart(GameObject inventory) {
 		PartScript[] parts = inventory.GetComponentsInChildren<PartScript>();
 		foreach (PartScript part in parts) {
 			if (!part.collected) {
