@@ -3,30 +3,29 @@ using System.Collections;
 
 public class InventoryPartSpawnerScript : MonoBehaviour {
 	[SerializeField]
-	private int partNumber = 5;
+	RocketBuilderScript rocketBuilder;
 	[SerializeField]
 	private float partDistance = 1f;
-	[SerializeField]
-	private GameObject[] partPrefabs;
-	private GameObject nextPartObject;
+	private GameObject[] rocket;
+	private int count = 0;
+
 	private GameObject lastPartObject;
 
 	// Use this for initialization
 	void Start () {
-		nextPartObject = partPrefabs[Random.Range(0, partPrefabs.Length)];
+		rocket = rocketBuilder.createRocket ();
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		if (partNumber > 0 && (!lastPartObject || 
+		if (count < rocket.Length && (!lastPartObject || 
 		    transform.position.y - lastPartObject.transform.position.y > partDistance)) {
 			
-			lastPartObject = Instantiate(nextPartObject, transform.position, Quaternion.identity) as GameObject;
+			lastPartObject = Instantiate(rocket[count], transform.position, Quaternion.identity) as GameObject;
 			lastPartObject.transform.localScale = transform.parent.localScale;
 			lastPartObject.transform.SetParent(transform.parent);
 			
-			nextPartObject = partPrefabs[Random.Range(0, partPrefabs.Length)];
-			partNumber--;
+			count++;
 		}
 	}
 }

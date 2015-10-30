@@ -20,6 +20,7 @@ public class PartScript : MonoBehaviour {
 	void Update () {
 		Color color = spriteRenderer.color;
 		color.g = energy / maxEnergy;
+		color.b = energy / maxEnergy;
 		spriteRenderer.color = color;
 	}
 
