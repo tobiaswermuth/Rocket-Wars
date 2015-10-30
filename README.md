@@ -13,7 +13,7 @@ player 2 with the left and right arrow.
 Moving the boat costs the player energy
 which you can see by looking at the
 color of the inventory (green => full energy, red => empty).
-Players can get new energy by catching items they don’t need yet.
+Players can get new energy by catching items they don’t need.
 
 To catch an item,
 a player has to press the catch button (S for Player 1, down arrow for player 2)

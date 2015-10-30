@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class LevelPieceScript : MonoBehaviour {
-	private float speed = 70f;
+	private float speed = 60f;
 	[SerializeField]
 	private GameObject[] possibleParts;
 
