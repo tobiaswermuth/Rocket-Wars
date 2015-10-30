@@ -2,12 +2,17 @@ using UnityEngine;
 using System.Collections;
 
 public class ShipScript : MonoBehaviour {
+	enum MovementType { Path, Float }
+
+	[SerializeField]
+	private MovementType movementType = MovementType.Path;
 	[SerializeField]
 	private float movementCost = 1f;
 	[SerializeField]
 	private Rigidbody2D myRigidbody;
 
 	private int lastPlayer = -1;
+	private int winner = -1;
 	private ArrayList pressedPlayers = new ArrayList();
 	private float[] pressedDirectionlast = new float[]{0f, 0f};
 
@@ -32,30 +37,49 @@ public class ShipScript : MonoBehaviour {
 		float[] pathXs = nearestLevelPiece.GetComponent<LevelPieceScript> ().getNearestTwoPathXs (transform.position);
 
 		Vector3 position = transform.position;
-		if (position.y < nearestLevelPiece.transform.position.y - nearestLevelPiece.GetComponent<BoxCollider2D> ().size.y / 2 - GetComponent<CircleCollider2D> ().radius) {
-			if (transform.position.x != pathXs [0]) {
-				if (Time.time - pressedDirectionlast[0] > 0.1 && Input.GetKeyDown (KeyCode.A) && getPlayerEnergy (0) >= movementCost) {
-					position.x = pathXs [0];
-					pressedDirectionlast[0] = Time.time;
-					removePlayerEnergy (0, movementCost);
+		if (movementType == MovementType.Path) {
+			if (position.y < nearestLevelPiece.transform.position.y - nearestLevelPiece.GetComponent<BoxCollider2D> ().size.y / 2 - GetComponent<CircleCollider2D> ().radius) {
+				if (transform.position.x != pathXs [0]) {
+					if (Time.time - pressedDirectionlast [0] > 0.1 && Input.GetKeyDown (KeyCode.A) && getPlayerEnergy (0) >= movementCost) {
+						position.x = pathXs [0];
+						pressedDirectionlast [0] = Time.time;
+						removePlayerEnergy (0, movementCost);
+					}
+					if (Time.time - pressedDirectionlast [1] > 0.1 && Input.GetKeyDown (KeyCode.LeftArrow) && getPlayerEnergy (1) >= movementCost) {
+						position.x = pathXs [0];
+						pressedDirectionlast [1] = Time.time;
+						removePlayerEnergy (1, movementCost);
+					}
 				}
-				if (Time.time - pressedDirectionlast[1] > 0.1 && Input.GetKeyDown (KeyCode.LeftArrow) && getPlayerEnergy (1) >= movementCost) {
-					position.x = pathXs [0];
-					pressedDirectionlast[1] = Time.time;
-					removePlayerEnergy (1, movementCost);
+				if (transform.position.x != pathXs [1]) {
+					if (Time.time - pressedDirectionlast [0] > 0.1 && Input.GetKeyDown (KeyCode.D) && getPlayerEnergy (0) >= movementCost) {
+						position.x = pathXs [1];
+						pressedDirectionlast [0] = Time.time;
+						removePlayerEnergy (0, movementCost);
+					}
+					if (Time.time - pressedDirectionlast [1] > 0.1 && Input.GetKeyDown (KeyCode.RightArrow) && getPlayerEnergy (1) >= movementCost) {
+						position.x = pathXs [1];
+						pressedDirectionlast [1] = Time.time;
+						removePlayerEnergy (1, movementCost);
+					}
 				}
 			}
-			if (transform.position.x != pathXs [1]) {
-				if (Time.time - pressedDirectionlast[0] > 0.1 && Input.GetKeyDown (KeyCode.D) && getPlayerEnergy (0) >= movementCost) {
-					position.x = pathXs [1];
-					pressedDirectionlast[0] = Time.time;
-					removePlayerEnergy (0, movementCost);
-				}
-				if (Time.time - pressedDirectionlast[1] > 0.1 && Input.GetKeyDown (KeyCode.RightArrow) && getPlayerEnergy (1) >= movementCost) {
-					position.x = pathXs [1];
-					pressedDirectionlast[1] = Time.time;
-					removePlayerEnergy (1, movementCost);
-				}
+		} else if (movementType == MovementType.Float) {
+			if (Input.GetKey(KeyCode.LeftArrow) && getPlayerEnergy(1) > movementCost / 30) {
+				myRigidbody.AddForce(Vector2.left * 20);
+				removePlayerEnergy(1, movementCost / 30);
+			}
+			if (Input.GetKey(KeyCode.A) && getPlayerEnergy(0) > movementCost / 30) {
+				myRigidbody.AddForce(Vector2.left * 20);
+				removePlayerEnergy(0, movementCost / 30);
+			}
+			if (Input.GetKey(KeyCode.RightArrow) && getPlayerEnergy(1) > movementCost / 30) {
+				myRigidbody.AddForce(Vector2.right * 20);
+				removePlayerEnergy(1, movementCost / 30);
+			}
+			if (Input.GetKey(KeyCode.D) && getPlayerEnergy(0) > movementCost / 30) {
+				myRigidbody.AddForce(Vector2.right * 20);
+				removePlayerEnergy(0, movementCost / 30);
 			}
 		}
 
@@ -69,8 +93,12 @@ public class ShipScript : MonoBehaviour {
 		}
 		transform.position = position;
 
-		addPlayerEnergy (0, 0.002f);
-		addPlayerEnergy (1, 0.002f);
+		addPlayerEnergy (0, 0.003f);
+		addPlayerEnergy (1, 0.003f);
+
+		if (winner != -1) {
+			myRigidbody.AddForce((winner == 0 ? Vector2.left : Vector2.right) * 50);
+		}
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
@@ -90,6 +118,7 @@ public class ShipScript : MonoBehaviour {
 				} else {
 					Destroy (inventory.GetComponentInChildren<MarkerScript>().gameObject);
 					startRocket(inventory);
+					winner = lastPlayer;
 				}
 			} else {
 				addPlayerEnergy(lastPlayer, other.GetComponent<PartScript>().getEnergy());
@@ -102,7 +131,15 @@ public class ShipScript : MonoBehaviour {
 			Vector3 position = transform.position;
 			GameObject nearestLevelPiece = levelSpawner.getNearestLevelPiece (transform.position);
 			float[] pathXs = nearestLevelPiece.GetComponent<LevelPieceScript> ().getNearestTwoPathXs (transform.position);
-			position.x = pathXs[Random.Range(0, 2)];
+			if (movementType == MovementType.Path) {
+				position.x = pathXs[Random.Range(0, 2)];
+			} else if (movementType == MovementType.Float) {
+				if (Mathf.Abs(pathXs[0] - transform.position.x) < Mathf.Abs(pathXs[1] - transform.position.x)) {
+					position.x = pathXs[0];
+				} else {
+					position.x = pathXs[1];
+				}
+			}
 			transform.position = position;
 		}
 	}
