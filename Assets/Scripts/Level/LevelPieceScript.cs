@@ -12,7 +12,7 @@ public class LevelPieceScript : MonoBehaviour {
 			if (child.CompareTag("Part Placeholder")) {
 				GameObject nextPartPrefab = possibleParts[Random.Range(0, possibleParts.Length)];
 				if (Random.Range(0, 3) == 2) {
-					nextPartPrefab = ShipScript.instance.findNextPart(ShipScript.instance.randomPlayerInventory());
+					//nextPartPrefab = ShipScript.instance.findNextPart(ShipScript.instance.randomPlayerInventory());
 				}
 
 				GameObject part = Instantiate(nextPartPrefab, child.position, Quaternion.identity) as GameObject;

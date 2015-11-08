@@ -15,7 +15,7 @@ public class RocketBuilderScript : MonoBehaviour {
 	RocketPart[] topCombination = {RocketPart.Capsule, RocketPart.TopEnd};
 	Dictionary<RocketPart, RocketPart[]> possibleTransitions = new Dictionary<RocketPart, RocketPart[]>()
 	{
-		{RocketPart.Tank, new RocketPart[]{ RocketPart.Tank, RocketPart.Engine }},
+		{RocketPart.Tank,   new RocketPart[]{ RocketPart.Tank, RocketPart.Engine }},
 		{RocketPart.Engine, new RocketPart[]{ RocketPart.Tank }},
 	};
 
@@ -72,10 +72,5 @@ public class RocketBuilderScript : MonoBehaviour {
 		}
 
 		return rocket;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 }
