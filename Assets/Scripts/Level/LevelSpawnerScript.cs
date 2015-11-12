@@ -28,7 +28,6 @@ public class LevelSpawnerScript : MonoBehaviour {
 
 	private void createLevelPiece(GameObject prefab, Vector3 position) {
 		lastLevelObject = Instantiate(prefab, position, Quaternion.identity) as GameObject;
-		lastLevelObject.transform.SetParent(transform.parent);
 		lastLevelObject.transform.localScale = transform.parent.localScale;
 		
 		nextLevelObject = levelPrefabs[Random.Range(0, levelPrefabs.Length)];

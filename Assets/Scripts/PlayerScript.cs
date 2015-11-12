@@ -6,11 +6,15 @@ public class PlayerScript : MonoBehaviour {
 	public RocketScript rocket;
 	
 	[SerializeField]
-	public KeyCode leftKey;
+	public KeyCode forwardKey;
 	[SerializeField]
-	public KeyCode rightKey;
+	public KeyCode backwardKey;
 	[SerializeField]
 	public KeyCode grabKey;
+	
+	public enum PlayerShipPosition {left, right};
+	[SerializeField]
+	public PlayerShipPosition shipPosition;
 	
 	public bool hasGrabbed = false;
 	public float lastMovementTimestamp = 0.0f;

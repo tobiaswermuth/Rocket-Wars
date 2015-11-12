@@ -34,32 +34,26 @@ public class ShipScript : MonoBehaviour {
 		}
 	}
 	
+	void Update () {
+		float velocityAngel = Vector2.Angle(new Vector2(1, 0), myRigidbody.velocity) - 90;
+		transform.rotation = Quaternion.Euler(0, 0, velocityAngel);
+	}
+	
 	// Update is called once per frame
 	void FixedUpdate () {
-		GameObject nearestLevelPiece = levelSpawner.getNearestLevelPiece (transform.position);
-		float[] pathXs = nearestLevelPiece.GetComponent<LevelPieceScript> ().getNearestTwoPathXs (transform.position);
-
 		Vector3 position = transform.position;
 		
 		foreach (PlayerScript player in players) {
 			if (Time.time - player.lastMovementTimestamp > movementTimeDifference && player.getEnergy() >= movementCost) {
-				if (movementType == MovementType.Path ? Input.GetKeyDown(player.leftKey) : Input.GetKey(player.leftKey)) {
-					if (movementType == MovementType.Path) {
-						position.x = pathXs [0];
-						player.removeEnergy(movementCost);
-					} else {
-						myRigidbody.AddForce(Vector2.left * 100);
-						player.removeEnergy(movementCost / 30);
-					}
+				if (Input.GetKey(player.forwardKey)) {
+					Vector2 forceDirection = player.shipPosition == PlayerScript.PlayerShipPosition.left ? Vector2.right : Vector2.left; 
+					myRigidbody.AddForce(forceDirection * 100 + Vector2.up * 50);
+					player.removeEnergy(movementCost / 30);
 					player.lastMovementTimestamp = Time.time;
-				} else if (movementType == MovementType.Path ? Input.GetKeyDown(player.rightKey) : Input.GetKey(player.rightKey)) {
-					if (movementType == MovementType.Path) {
-						position.x = pathXs [1];
-						player.removeEnergy(movementCost);
-					} else {
-						myRigidbody.AddForce(Vector2.right * 100);
-						player.removeEnergy(movementCost / 30);
-					}
+				} else if (Input.GetKey(player.backwardKey)) {
+					Vector2 forceDirection = player.shipPosition == PlayerScript.PlayerShipPosition.left ? Vector2.left : Vector2.right; 
+					myRigidbody.AddForce(forceDirection * 100 + Vector2.down * 50);
+					player.removeEnergy(movementCost / 30);
 					player.lastMovementTimestamp = Time.time;
 				}
 			}
