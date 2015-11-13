@@ -17,8 +17,7 @@ public class PlayerScript : MonoBehaviour {
 	public PlayerShipPosition shipPosition;
 	
 	public bool hasGrabbed = false;
-	public float lastMovementTimestamp = 0.0f;
-	
+
 	// Use this for initialization
 	void Start () {
 	
