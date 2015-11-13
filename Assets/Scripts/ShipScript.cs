@@ -46,13 +46,9 @@ public class ShipScript : MonoBehaviour {
 		foreach (PlayerScript player in players) {
 			if (player.getEnergy() >= movementEnergyCost) {
 				if (Input.GetKey(player.forwardKey)) {
-					Vector2 forceDirection = player.shipPosition == PlayerScript.PlayerShipPosition.left ? Vector2.right : Vector2.left; 
-					myRigidbody.AddForce(forceDirection * speed + Vector2.up * speed/2);
-					player.removeEnergy(movementEnergyCost);
+					addPlayerMovement(player, 1);
 				} else if (Input.GetKey(player.backwardKey)) {
-					Vector2 forceDirection = player.shipPosition == PlayerScript.PlayerShipPosition.left ? Vector2.left : Vector2.right; 
-					myRigidbody.AddForce(forceDirection * speed + Vector2.down * speed/2);
-					player.removeEnergy(movementEnergyCost);
+					addPlayerMovement(player, -1);
 				}
 			}
 			
@@ -67,6 +63,12 @@ public class ShipScript : MonoBehaviour {
 		transform.position = position;
 	}
 	
+	public void addPlayerMovement(PlayerScript player, float direction) {
+		Vector2 forceDirection = player.shipPosition == PlayerScript.PlayerShipPosition.left ? Vector2.right : Vector2.left; 
+		myRigidbody.AddForce((forceDirection * speed + Vector2.up * speed/2) * direction);
+		player.removeEnergy(movementEnergyCost);
+	}
+	
 	void win(PlayerScript player) {
 		Destroy (player.rocket.marker);
 		player.rocket.start();
@@ -75,10 +77,24 @@ public class ShipScript : MonoBehaviour {
 	
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.CompareTag("Part")) {
-			if (lastPlayer == null) {
-				lastPlayer = randomPlayer();
-			}
 			PartScript levelPart = other.gameObject.GetComponent<PartScript>();
+			
+			if (lastPlayer == null) {
+				foreach (PlayerScript player in players) {
+					GameObject pRocketPart = player.rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
+					if (pRocketPart) {
+						if (lastPlayer == null) {
+							lastPlayer = player;
+						} else {
+							lastPlayer = randomPlayer();
+						}
+					}
+				}
+				if (lastPlayer == null) {
+					lastPlayer = randomPlayer();
+				}
+			}
+
 			RocketScript rocket = lastPlayer.rocket;
 			GameObject rocketPart = rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
 			if (rocketPart) {
@@ -120,5 +136,14 @@ public class ShipScript : MonoBehaviour {
 
 	public PlayerScript randomPlayer() {
 		return players[Random.Range(0, players.Length)];
+	}
+	
+	public PlayerScript playerOnSite(float x) {
+		foreach(PlayerScript player in players) {
+			if ((player.shipPosition == PlayerScript.PlayerShipPosition.left && x < 0) || (player.shipPosition == PlayerScript.PlayerShipPosition.right && x > 0)) {
+				return player;
+			}
+		}
+		return null;
 	}
 }
