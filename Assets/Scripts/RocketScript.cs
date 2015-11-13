@@ -32,7 +32,6 @@ public class RocketScript : MonoBehaviour {
 	void Update() {
 		if (parts.Count < spawnParts.Length && (!lastSpawnedPart || transform.position.y - lastSpawnedPart.transform.position.y > partSpawnDistance)) {
 			lastSpawnedPart = Instantiate(spawnParts[parts.Count], partSpawn.transform.position, Quaternion.identity) as GameObject;
-			//lastSpawnedPart.transform.localScale = transform.parent.localScale;
 			lastSpawnedPart.transform.SetParent(transform);
 			
 			parts.Add(lastSpawnedPart.GetComponent<PartScript>());

@@ -17,7 +17,7 @@ public class LevelPieceScript : MonoBehaviour {
 				if (Random.Range(0, 3) == 2) {
 					GameObject nextPlayerPart = ShipScript.instance.randomPlayer().rocket.findNextPart();
 					if (nextPlayerPart) {
-						nextPartPrefab = ShipScript.instance.randomPlayer().rocket.findNextPart();
+						nextPartPrefab = nextPlayerPart;
 					}
 				}
 				

@@ -44,16 +44,16 @@ public class ShipScript : MonoBehaviour {
 		Vector3 position = transform.position;
 		
 		foreach (PlayerScript player in players) {
-			if (Time.time - player.lastMovementTimestamp > movementTimeDifference && player.getEnergy() >= movementCost) {
+			if (Time.time - player.lastMovementTimestamp > movementTimeDifference && player.getEnergy() >= movementCost / 10) {
 				if (Input.GetKey(player.forwardKey)) {
 					Vector2 forceDirection = player.shipPosition == PlayerScript.PlayerShipPosition.left ? Vector2.right : Vector2.left; 
 					myRigidbody.AddForce(forceDirection * 100 + Vector2.up * 50);
-					player.removeEnergy(movementCost / 30);
+					//player.removeEnergy(movementCost / 10);
 					player.lastMovementTimestamp = Time.time;
 				} else if (Input.GetKey(player.backwardKey)) {
 					Vector2 forceDirection = player.shipPosition == PlayerScript.PlayerShipPosition.left ? Vector2.left : Vector2.right; 
 					myRigidbody.AddForce(forceDirection * 100 + Vector2.down * 50);
-					player.removeEnergy(movementCost / 30);
+					//player.removeEnergy(movementCost / 10);
 					player.lastMovementTimestamp = Time.time;
 				}
 			}
