@@ -17,9 +17,17 @@ public class LevelSpawnerScript : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 		if (!lastLevelObject || 
-		    transform.position.y - (lastLevelObject.transform.position.y + lastLevelObject.GetComponent<BoxCollider2D>().size.y) > levelDistance) {
-
-			Vector3 nextPosition = transform.position;
+		    transform.position.y - (lastLevelObject.transform.position.y + lastLevelObject.GetComponent<BoxCollider2D>().size.y/2) > levelDistance) {
+				
+			Vector3 nextPosition;
+			if (lastLevelObject) {
+				nextPosition = lastLevelObject.transform.position;
+				nextPosition.y += lastLevelObject.GetComponent<BoxCollider2D>().size.y/2;
+				nextPosition.y += levelDistance;
+			} else {
+				nextPosition = transform.position;
+			}
+			
 			nextPosition.y += nextLevelObject.GetComponent<BoxCollider2D>().size.y / 2;
 
 			createLevelPiece(nextLevelObject, nextPosition);
@@ -28,7 +36,6 @@ public class LevelSpawnerScript : MonoBehaviour {
 
 	private void createLevelPiece(GameObject prefab, Vector3 position) {
 		lastLevelObject = Instantiate(prefab, position, Quaternion.identity) as GameObject;
-		lastLevelObject.transform.localScale = transform.parent.localScale;
 		
 		nextLevelObject = levelPrefabs[Random.Range(0, levelPrefabs.Length)];
 	}

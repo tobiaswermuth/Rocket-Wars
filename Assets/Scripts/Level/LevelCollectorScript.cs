@@ -3,6 +3,6 @@ using System.Collections;
 
 public class LevelCollectorScript : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
-		Destroy(other);
+		Destroy(other.gameObject);
 	}
 }
