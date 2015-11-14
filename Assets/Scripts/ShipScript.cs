@@ -36,7 +36,9 @@ public class ShipScript : MonoBehaviour {
 	
 	void Update () {
 		float velocityAngel = Vector2.Angle(new Vector2(1, 0), myRigidbody.velocity) - 90;
-		transform.rotation = Quaternion.Euler(0, 0, velocityAngel);
+		Quaternion rotation = transform.rotation;
+		rotation.z += (Quaternion.Euler(0, 0, velocityAngel).z - rotation.z)/20;
+		transform.rotation = rotation;
 	}
 	
 	// Update is called once per frame
