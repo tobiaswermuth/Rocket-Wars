@@ -6,19 +6,27 @@ public class LevelSpawnerScript : MonoBehaviour {
 	private float levelDistance = 1f;
 	[SerializeField]
 	private GameObject[] levelPrefabs;
+	[SerializeField]
+	private bool spawnUntilCollector;
+	[SerializeField]
+	private GameObject collector;
+	
 	private GameObject nextLevelObject;
 	private GameObject lastLevelObject;
 
 	// Use this for initialization
 	void Start () {
-		createLevelPiece(levelPrefabs[Random.Range(0, levelPrefabs.Length)], transform.position);
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+		runCreationProcess();
+	}
+	
+	private void runCreationProcess() {
 		if (!lastLevelObject || 
 		    transform.position.y - (lastLevelObject.transform.position.y + lastLevelObject.GetComponent<BoxCollider2D>().size.y/2) > levelDistance) {
-				
+			
 			Vector3 nextPosition;
 			if (lastLevelObject) {
 				nextPosition = lastLevelObject.transform.position;
@@ -28,16 +36,28 @@ public class LevelSpawnerScript : MonoBehaviour {
 				nextPosition = transform.position;
 			}
 			
-			nextPosition.y += nextLevelObject.GetComponent<BoxCollider2D>().size.y / 2;
-
-			createLevelPiece(nextLevelObject, nextPosition);
+			if (nextLevelObject) {
+				nextPosition.y += nextLevelObject.GetComponent<BoxCollider2D>().size.y / 2;
+				createLevelPiece(nextLevelObject, nextPosition);
+			} else {
+				if (spawnUntilCollector && collector) {
+					nextPosition.y = collector.transform.position.y;
+				}
+				createLevelPiece(getRandomLevelObject(), nextPosition);
+			}
+			
+			runCreationProcess();
 		}
 	}
 
 	private void createLevelPiece(GameObject prefab, Vector3 position) {
 		lastLevelObject = Instantiate(prefab, position, Quaternion.identity) as GameObject;
 		
-		nextLevelObject = levelPrefabs[Random.Range(0, levelPrefabs.Length)];
+		nextLevelObject = getRandomLevelObject();
+	}
+	
+	private GameObject getRandomLevelObject() {
+		return levelPrefabs[Random.Range(0, levelPrefabs.Length)];
 	}
 
 	public GameObject getNearestLevelPiece(Vector3 position) {

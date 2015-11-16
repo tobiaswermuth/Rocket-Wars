@@ -36,6 +36,7 @@ public class ShipScript : MonoBehaviour {
 	
 	void Update () {
 		float velocityAngel = Vector2.Angle(new Vector2(1, 0), myRigidbody.velocity) - 90;
+		
 		Quaternion rotation = transform.rotation;
 		rotation.z += (Quaternion.Euler(0, 0, velocityAngel).z - rotation.z)/20;
 		transform.rotation = rotation;
