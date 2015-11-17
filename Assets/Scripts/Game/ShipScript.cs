@@ -44,26 +44,28 @@ public class ShipScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		Vector3 position = transform.position;
-		
-		foreach (PlayerScript player in players) {
-			if (player.getEnergy() >= movementEnergyCost) {
-				if (Input.GetKey(player.forwardKey)) {
-					addPlayerMovement(player, 1);
-				} else if (Input.GetKey(player.backwardKey)) {
-					addPlayerMovement(player, -1);
+		if (!winner) {
+			Vector3 position = transform.position;
+			
+			foreach (PlayerScript player in players) {
+				if (player.getEnergy() >= movementEnergyCost) {
+					if (Input.GetKey(player.forwardKey)) {
+						addPlayerMovement(player, 1);
+					} else if (Input.GetKey(player.backwardKey)) {
+						addPlayerMovement(player, -1);
+					}
 				}
+				
+				if (!player.hasGrabbed && Input.GetKeyDown(player.grabKey)) {
+					lastPlayer = player;
+					player.hasGrabbed = true;
+				}
+				
+				player.addEnergy(energyReloadAmount);
 			}
-			
-			if (!player.hasGrabbed && Input.GetKeyDown(player.grabKey)) {
-				lastPlayer = player;
-				player.hasGrabbed = true;
-			}
-			
-			player.addEnergy(energyReloadAmount);
+	
+			transform.position = position;
 		}
-
-		transform.position = position;
 	}
 	
 	public void addPlayerMovement(PlayerScript player, float direction) {
@@ -76,6 +78,15 @@ public class ShipScript : MonoBehaviour {
 		Destroy (player.rocket.marker);
 		player.rocket.start();
 		winner = player;
+		
+		ApplicationControllerScript.instance.winner = winner;
+		
+		StartCoroutine(startEndCountdown());
+	}
+	
+	IEnumerator startEndCountdown () {
+		yield return new WaitForSeconds (3f);
+		Application.LoadLevel ("End");
 	}
 	
 	void OnTriggerEnter2D(Collider2D other) {
