@@ -24,6 +24,7 @@ public class LevelPieceScript : MonoBehaviour {
 				GameObject part = Instantiate(nextPartPrefab, child.position, Quaternion.identity) as GameObject;
 				part.transform.SetParent(transform);
 				part.GetComponent<Rigidbody2D>().isKinematic = true;
+				part.GetComponent<SpriteRenderer>().sortingLayerName = "Default";
 				
 				Destroy(child.gameObject);
 			}

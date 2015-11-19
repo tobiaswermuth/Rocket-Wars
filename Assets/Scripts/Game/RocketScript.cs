@@ -33,6 +33,8 @@ public class RocketScript : MonoBehaviour {
 		if (parts.Count < spawnParts.Length && (!lastSpawnedPart || transform.position.y - lastSpawnedPart.transform.position.y > partSpawnDistance)) {
 			lastSpawnedPart = Instantiate(spawnParts[parts.Count], partSpawn.transform.position, Quaternion.identity) as GameObject;
 			lastSpawnedPart.transform.SetParent(transform);
+			lastSpawnedPart.GetComponent<SpriteRenderer>().sortingLayerName = "UI Part";
+			
 			
 			parts.Add(lastSpawnedPart.GetComponent<PartScript>());
 		}
