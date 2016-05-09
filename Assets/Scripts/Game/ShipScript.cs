@@ -66,7 +66,7 @@ public class ShipScript : MonoBehaviour {
 	
 	void win(PlayerScript player) {
 		Destroy (player.rocket.marker);
-		player.rocket.start();
+		player.rocket.ignite();
 		winner = player;
 		
 		ApplicationControllerScript.instance.winner = winner;

@@ -18,7 +18,21 @@ public class RocketScript : MonoBehaviour {
 	private GameObject lastSpawnedPart;
 	
 	private List<PartScript> parts = new List<PartScript>();
-	
+
+	void Start () {
+		Camera cam = Camera.main;
+		float camHeight = 2f * cam.orthographicSize;
+		float camWidth = camHeight * cam.aspect;
+
+		var position = transform.position;
+		if (position.x < 0) {
+			position.x = -camWidth /2 + marker.GetComponent<Renderer> ().bounds.size.x /2;
+		} else {
+			position.x = camWidth /2 - marker.GetComponent<Renderer> ().bounds.size.x /2;
+		}
+		transform.position = position;
+	}
+
 	public void spawn() {
 		spawnParts = rocketBuilder.createRocket ();
 	}
@@ -40,7 +54,7 @@ public class RocketScript : MonoBehaviour {
 		}
 	}
 	
-	public void start() {
+	public void ignite() {
 		hasStarted = true;
 		
 		foreach (PartScript part in parts) {
