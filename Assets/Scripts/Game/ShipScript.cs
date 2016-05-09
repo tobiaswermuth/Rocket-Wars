@@ -4,12 +4,15 @@ using System.Collections;
 public class ShipScript : MonoBehaviour {
 	[SerializeField]
 	private Rigidbody2D myRigidbody;
-	
-	private PlayerScript[] players;
-	private PlayerScript winner = null;
+
+	[SerializeField]
+	private int maxAngle = 90;
 
 	[SerializeField]
 	private LevelSpawnerScript levelSpawner;
+
+	private PlayerScript[] players;
+	private PlayerScript winner = null;
 
 	public static ShipScript instance;
 
@@ -37,11 +40,23 @@ public class ShipScript : MonoBehaviour {
 			transform.position = position;
 		}
 	}
+
+	void Update() {
+		var eulerAngles = transform.eulerAngles;
+		// transform angles 0 - 360 to 0 - 180\-180 - 0
+		var shipAngle = ((eulerAngles.z + 180) % 360) - 180;
+		if (shipAngle > maxAngle) {
+			eulerAngles.z = maxAngle;
+		} else if (shipAngle < -maxAngle) {
+			eulerAngles.z = -maxAngle;
+		}
+		transform.eulerAngles = eulerAngles;
+	}
 	
 	public void addPlayerMovement(PlayerScript player, float strength) {
 		Vector2 forcePosition = player.paddle.transform.position;
 
-		var shipAngle = transform.rotation.eulerAngles.z;
+		var shipAngle = transform.eulerAngles.z;
 		Vector2 forceDirection = new Vector2(
 			-Mathf.Sin(Mathf.Deg2Rad * shipAngle), 
 			Mathf.Cos(Mathf.Deg2Rad * shipAngle));
