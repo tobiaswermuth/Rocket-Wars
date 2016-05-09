@@ -62,6 +62,11 @@ public class ShipScript : MonoBehaviour {
 			Mathf.Cos(Mathf.Deg2Rad * shipAngle));
 
 		myRigidbody.AddForceAtPosition(forceDirection * strength, forcePosition);
+
+		var tutorial = ApplicationControllerScript.instance.tutorial;
+		if (tutorial != null) {
+			Destroy (tutorial);
+		}
 	}
 	
 	void win(PlayerScript player) {
