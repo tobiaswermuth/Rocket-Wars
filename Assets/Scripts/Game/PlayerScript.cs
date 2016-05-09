@@ -4,6 +4,9 @@ using System.Collections;
 public class PlayerScript : MonoBehaviour {
 	[SerializeField]
 	public RocketScript rocket;
+
+	[SerializeField]
+	public GameObject paddle;
 	
 	[SerializeField]
 	public KeyCode forwardKey;
@@ -18,15 +21,6 @@ public class PlayerScript : MonoBehaviour {
 	
 	public bool hasGrabbed = false;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 	
 	public float getEnergy() {
 		float aggregatedEnergy = 0;

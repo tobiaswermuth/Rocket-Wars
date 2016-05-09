@@ -24,7 +24,6 @@ public class ShipScript : MonoBehaviour {
 
 	public static ShipScript instance;
 
-	// Use this for initialization
 	void Start () {
 		instance = this;
 		
@@ -33,16 +32,7 @@ public class ShipScript : MonoBehaviour {
 			player.rocket.spawn();
 		}
 	}
-	
-	void Update () {
-		float velocityAngel = Vector2.Angle(new Vector2(1, 0), myRigidbody.velocity) - 90;
-		
-		Quaternion rotation = transform.rotation;
-		rotation.z += (Quaternion.Euler(0, 0, velocityAngel).z - rotation.z)/20;
-		transform.rotation = rotation;
-	}
-	
-	// Update is called once per frame
+
 	void FixedUpdate () {
 		if (!winner) {
 			Vector3 position = transform.position;
@@ -50,9 +40,9 @@ public class ShipScript : MonoBehaviour {
 			foreach (PlayerScript player in players) {
 				if (player.getEnergy() >= movementEnergyCost) {
 					if (Input.GetKey(player.forwardKey)) {
-						addPlayerMovement(player, 1);
+						addPlayerMovement(player, 10f);
 					} else if (Input.GetKey(player.backwardKey)) {
-						addPlayerMovement(player, -1);
+						addPlayerMovement(player, -10f);
 					}
 				}
 				
@@ -68,10 +58,16 @@ public class ShipScript : MonoBehaviour {
 		}
 	}
 	
-	public void addPlayerMovement(PlayerScript player, float direction) {
-		Vector2 forceDirection = player.shipPosition == PlayerScript.PlayerShipPosition.left ? Vector2.right : Vector2.left; 
-		myRigidbody.AddForce((forceDirection * speed + Vector2.up * speed/2) * direction);
-		player.removeEnergy(movementEnergyCost);
+	public void addPlayerMovement(PlayerScript player, float strength) {
+		Vector2 forcePosition = player.paddle.transform.position;
+
+		var shipAngle = transform.rotation.eulerAngles.z;
+		Vector2 forceDirection = new Vector2(
+			-Mathf.Sin(Mathf.Deg2Rad * shipAngle), 
+			Mathf.Cos(Mathf.Deg2Rad * shipAngle));
+
+		myRigidbody.AddForceAtPosition(forceDirection * strength, forcePosition);
+		//player.removeEnergy(movementEnergyCost);
 	}
 	
 	void win(PlayerScript player) {
