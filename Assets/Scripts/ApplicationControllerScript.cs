@@ -14,11 +14,11 @@ public class ApplicationControllerScript : MonoBehaviour {
 	}
 	
 	void Start () {
-		if (!instance) {
-			instance = this;
-			DontDestroyOnLoad(transform.gameObject);
-		} else {
-			Destroy(this);
+		if (instance) {
+			Destroy(instance);
 		}
+
+		instance = this;
+		DontDestroyOnLoad(transform.gameObject);
 	}
 }

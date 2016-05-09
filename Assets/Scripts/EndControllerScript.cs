@@ -7,8 +7,7 @@ public class EndControllerScript : MonoBehaviour {
 	[SerializeField]
 	Text wonLabel;
 	
-	// Use this for initialization
 	void Start () {
-		wonLabel.text = "Player on " + ApplicationControllerScript.instance.winner.shipPosition + " side wins!";
+		wonLabel.text = ApplicationControllerScript.instance.winner.shipPosition + " Player wins!";
 	}
 }

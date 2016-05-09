@@ -81,7 +81,7 @@ public class ShipScript : MonoBehaviour {
 	
 	IEnumerator startEndCountdown () {
 		yield return new WaitForSeconds (3f);
-		GetComponent<ChangeGameStateScript> ().endGame ();
+		GetComponent<ChangeGameStateScript>().endGame ();
 	}
 	
 	void OnTriggerEnter2D(Collider2D other) {
@@ -93,27 +93,29 @@ public class ShipScript : MonoBehaviour {
 	void partCollision(Collider2D partCollider) {
 		PartScript levelPart = partCollider.gameObject.GetComponent<PartScript>();
 
-		PlayerScript playerToGetPart = randomPlayer ();
+		PlayerScript playerToGetPart = null;
 		foreach (PlayerScript player in players) {
 			GameObject pRocketPart = player.rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
 			if (pRocketPart) {
-				if (player.rocket.remainingParts().Count > playerToGetPart.rocket.remainingParts().Count) {
+				if (playerToGetPart == null || player.rocket.remainingParts().Count > playerToGetPart.rocket.remainingParts().Count) {
 					playerToGetPart = player;
 				}
 			}
 		}
 
-		RocketScript rocket = playerToGetPart.rocket;
-		GameObject rocketPart = rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
-		if (rocketPart) {
-			rocketPart.GetComponent<PartScript>().collected = true;
-			GameObject nextPart = rocket.findNextPart();
-			if (nextPart) {
-				Vector3 markerPosition = rocket.marker.transform.position;
-				markerPosition.y = nextPart.transform.position.y;
-				rocket.marker.transform.position = markerPosition;
-			} else {
-				win(playerToGetPart);
+		if (playerToGetPart != null) {
+			RocketScript rocket = playerToGetPart.rocket;
+			GameObject rocketPart = rocket.findNextPartWithIdentifier (levelPart.partIdentifier);
+			if (rocketPart != null) {
+				rocketPart.GetComponent<PartScript> ().collected = true;
+				GameObject nextPart = rocket.findNextPart ();
+				if (nextPart) {
+					Vector3 markerPosition = rocket.marker.transform.position;
+					markerPosition.y = nextPart.transform.position.y;
+					rocket.marker.transform.position = markerPosition;
+				} else {
+					win (playerToGetPart);
+				}
 			}
 		}
 
