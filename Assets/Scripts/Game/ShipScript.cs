@@ -2,21 +2,10 @@ using UnityEngine;
 using System.Collections;
 
 public class ShipScript : MonoBehaviour {
-	enum MovementType { Path, Float }
-
-	[SerializeField]
-	private MovementType movementType = MovementType.Path;
-	[SerializeField]
-	private float movementEnergyCost = 1f;
-	[SerializeField]
-	private float energyReloadAmount = 0.003f;
-	[SerializeField]
-	private float speed = 20f;
 	[SerializeField]
 	private Rigidbody2D myRigidbody;
 	
 	private PlayerScript[] players;
-	private PlayerScript lastPlayer = null;
 	private PlayerScript winner = null;
 
 	[SerializeField]
@@ -38,20 +27,11 @@ public class ShipScript : MonoBehaviour {
 			Vector3 position = transform.position;
 			
 			foreach (PlayerScript player in players) {
-				if (player.getEnergy() >= movementEnergyCost) {
-					if (Input.GetKey(player.forwardKey)) {
-						addPlayerMovement(player, 10f);
-					} else if (Input.GetKey(player.backwardKey)) {
-						addPlayerMovement(player, -10f);
-					}
+				if (Input.GetKey(player.forwardKey)) {
+					addPlayerMovement(player, 10f);
+				} else if (Input.GetKey(player.backwardKey)) {
+					addPlayerMovement(player, -10f);
 				}
-				
-				if (!player.hasGrabbed && Input.GetKeyDown(player.grabKey)) {
-					lastPlayer = player;
-					player.hasGrabbed = true;
-				}
-				
-				player.addEnergy(energyReloadAmount);
 			}
 	
 			transform.position = position;
@@ -67,7 +47,6 @@ public class ShipScript : MonoBehaviour {
 			Mathf.Cos(Mathf.Deg2Rad * shipAngle));
 
 		myRigidbody.AddForceAtPosition(forceDirection * strength, forcePosition);
-		//player.removeEnergy(movementEnergyCost);
 	}
 	
 	void win(PlayerScript player) {
@@ -82,66 +61,43 @@ public class ShipScript : MonoBehaviour {
 	
 	IEnumerator startEndCountdown () {
 		yield return new WaitForSeconds (3f);
-		Application.LoadLevel ("End");
+		GetComponent<ChangeGameStateScript> ().endGame ();
 	}
 	
 	void OnTriggerEnter2D(Collider2D other) {
 		if (other.CompareTag("Part")) {
-			PartScript levelPart = other.gameObject.GetComponent<PartScript>();
-			
-			if (lastPlayer == null) {
-				foreach (PlayerScript player in players) {
-					GameObject pRocketPart = player.rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
-					if (pRocketPart) {
-						if (lastPlayer == null) {
-							lastPlayer = player;
-						} else {
-							lastPlayer = randomPlayer();
-						}
-					}
-				}
-				if (lastPlayer == null) {
-					lastPlayer = randomPlayer();
-				}
-			}
-
-			RocketScript rocket = lastPlayer.rocket;
-			GameObject rocketPart = rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
-			if (rocketPart) {
-				rocketPart.GetComponent<PartScript>().collected = true;
-				GameObject nextPart = rocket.findNextPart();
-				if (nextPart) {
-					Vector3 markerPosition = rocket.marker.transform.position;
-					markerPosition.y = nextPart.transform.position.y;
-					rocket.marker.transform.position = markerPosition;
-				} else {
-					win(lastPlayer);
-				}
-			} else {
-				lastPlayer.addEnergy(levelPart.getEnergy());
-			}
-
-			Destroy(other.gameObject);
-
-			foreach(PlayerScript player in players) {
-				player.hasGrabbed = false;
-			}
-			lastPlayer = null;
-		} else if (other.CompareTag("Obstacle")) {
-			Vector3 position = transform.position;
-			GameObject nearestLevelPiece = levelSpawner.getNearestLevelPiece (transform.position);
-			float[] pathXs = nearestLevelPiece.GetComponent<LevelPieceScript> ().getNearestTwoPathXs (transform.position);
-			if (movementType == MovementType.Path) {
-				position.x = pathXs[Random.Range(0, 2)];
-			} else if (movementType == MovementType.Float) {
-				if (Mathf.Abs(pathXs[0] - transform.position.x) < Mathf.Abs(pathXs[1] - transform.position.x)) {
-					position.x = pathXs[0];
-				} else {
-					position.x = pathXs[1];
-				}
-			}
-			transform.position = position;
+			partCollision (other);
 		}
+	}
+
+	void partCollision(Collider2D partCollider) {
+		PartScript levelPart = partCollider.gameObject.GetComponent<PartScript>();
+
+		PlayerScript playerToGetPart = randomPlayer ();
+		foreach (PlayerScript player in players) {
+			GameObject pRocketPart = player.rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
+			if (pRocketPart) {
+				if (player.rocket.remainingParts().Count > playerToGetPart.rocket.remainingParts().Count) {
+					playerToGetPart = player;
+				}
+			}
+		}
+
+		RocketScript rocket = playerToGetPart.rocket;
+		GameObject rocketPart = rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
+		if (rocketPart) {
+			rocketPart.GetComponent<PartScript>().collected = true;
+			GameObject nextPart = rocket.findNextPart();
+			if (nextPart) {
+				Vector3 markerPosition = rocket.marker.transform.position;
+				markerPosition.y = nextPart.transform.position.y;
+				rocket.marker.transform.position = markerPosition;
+			} else {
+				win(playerToGetPart);
+			}
+		}
+
+		Destroy(partCollider.gameObject);
 	}
 
 	public PlayerScript randomPlayer() {

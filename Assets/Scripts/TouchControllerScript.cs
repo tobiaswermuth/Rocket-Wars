@@ -12,7 +12,6 @@ public class TouchControllerScript : MonoBehaviour {
 
 	void FixedUpdate () {
 		foreach (Touch touch in Input.touches) {
-			Vector2 position = touch.position;
 			if (touches.ContainsKey (touch.fingerId)) {
 				ship.addPlayerMovement (touches[touch.fingerId], -touch.deltaPosition.y * rowForceModifier);
 				touches.Remove (touch.fingerId);

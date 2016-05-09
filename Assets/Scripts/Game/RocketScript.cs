@@ -19,22 +19,16 @@ public class RocketScript : MonoBehaviour {
 	
 	private List<PartScript> parts = new List<PartScript>();
 	
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
 	public void spawn() {
 		spawnParts = rocketBuilder.createRocket ();
 	}
 	
-	// Update is called once per frame
 	void Update() {
+		// create rocket piece by piece (if no piece spanwed yet or last piece arrived at bottom (?)
 		if (parts.Count < spawnParts.Length && (!lastSpawnedPart || transform.position.y - lastSpawnedPart.transform.position.y > partSpawnDistance)) {
 			lastSpawnedPart = Instantiate(spawnParts[parts.Count], partSpawn.transform.position, Quaternion.identity) as GameObject;
 			lastSpawnedPart.transform.SetParent(transform);
 			lastSpawnedPart.GetComponent<SpriteRenderer>().sortingLayerName = "UI Part";
-			
 			
 			parts.Add(lastSpawnedPart.GetComponent<PartScript>());
 		}
@@ -56,24 +50,21 @@ public class RocketScript : MonoBehaviour {
 			ps.Play();
 		}
 	}
+
+	public List<PartScript> remainingParts() {
+		return parts.FindAll (part => !part.collected);
+	}
 	
 	public GameObject findNextPartWithIdentifier(string partIdentifier) {
-		foreach (PartScript inventoryPart in parts) {
-			if (!inventoryPart.collected) {
-				if (inventoryPart.partIdentifier == partIdentifier) {
-					return inventoryPart.gameObject;
-				}
-				return null;
-			}
+		if (remainingParts ().Count > 0 && remainingParts () [0].partIdentifier == partIdentifier) {
+			return remainingParts () [0].gameObject;
 		}
 		return null;
 	}
 	
 	public GameObject findNextPart() {
-		foreach (PartScript part in parts) {
-			if (!part.collected) {
-				return part.gameObject;
-			}
+		if (remainingParts ().Count > 0) {
+			return remainingParts () [0].gameObject;
 		}
 		return null;
 	}

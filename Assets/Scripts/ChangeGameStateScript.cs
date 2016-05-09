@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ChangeGameStateScript : MonoBehaviour {
 	public void backToMenu() {
-		Application.LoadLevel("Start");
+		SceneManager.LoadScene("Start");
 	}
 	
 	public void startGame() {
-		Application.LoadLevel("Game");
+		SceneManager.LoadScene("Game");
 	}
 	
 	public void endGame() {
-		Application.LoadLevel("End");
+		SceneManager.LoadScene("End");
 	}
 }
