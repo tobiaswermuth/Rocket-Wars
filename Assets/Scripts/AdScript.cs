@@ -12,9 +12,10 @@ public class AdScript : MonoBehaviour {
 	void Start() {
 		Appodeal.disableLocationPermissionCheck();
 		Appodeal.initialize(APPODEALS_APP_KEY, Appodeal.INTERSTITIAL | Appodeal.BANNER);
+		Appodeal.show(Appodeal.BANNER_TOP);
 	}
 
-	void OnGUI() {
-		Appodeal.show(Appodeal.BANNER_TOP);
+	void OnDestroy() {
+		Appodeal.hide (Appodeal.BANNER_TOP);
 	}
 }
