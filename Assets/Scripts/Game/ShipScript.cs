@@ -4,6 +4,8 @@ using System.Collections;
 public class ShipScript : MonoBehaviour {
 	[SerializeField]
 	private Rigidbody2D myRigidbody;
+	[SerializeField]
+	public GameObject tutorial;
 
 	[SerializeField]
 	private int maxAngle = 90;
@@ -17,12 +19,16 @@ public class ShipScript : MonoBehaviour {
 	public static ShipScript instance;
 
 	void Start () {
+		Application.targetFrameRate = 60;
+
 		instance = this;
 		
 		players = GetComponents<PlayerScript>();
 		foreach (PlayerScript player in players) {
 			player.rocket.spawn();
 		}
+
+		ApplicationModel.winnerSide = null;
 	}
 
 	void FixedUpdate () {
@@ -63,7 +69,6 @@ public class ShipScript : MonoBehaviour {
 
 		myRigidbody.AddForceAtPosition(forceDirection * strength, forcePosition);
 
-		var tutorial = ApplicationControllerScript.instance.tutorial;
 		if (tutorial != null) {
 			Destroy (tutorial);
 		}
@@ -74,14 +79,15 @@ public class ShipScript : MonoBehaviour {
 		player.rocket.ignite();
 		winner = player;
 		
-		ApplicationControllerScript.instance.winner = winner;
-		
+		ApplicationModel.winnerSide = winner.shipPosition;
+
 		StartCoroutine(startEndCountdown());
 	}
 	
 	IEnumerator startEndCountdown () {
 		yield return new WaitForSeconds (3f);
-		GetComponent<ChangeGameStateScript>().endGame ();
+
+		GetComponent<ChangeGameStateScript>().toLobby ();
 	}
 	
 	void OnTriggerEnter2D(Collider2D other) {
