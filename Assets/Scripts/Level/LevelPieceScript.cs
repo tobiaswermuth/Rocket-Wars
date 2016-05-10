@@ -24,6 +24,7 @@ public class LevelPieceScript : MonoBehaviour {
 				part.transform.SetParent(transform);
 				part.GetComponent<Rigidbody2D>().isKinematic = true;
 				part.GetComponent<SpriteRenderer>().sortingLayerName = "Default";
+				part.GetComponent<PartScript> ().collectable = true;
 				
 				Destroy(child.gameObject);
 			}
