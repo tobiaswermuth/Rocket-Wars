@@ -40,11 +40,14 @@ public class RocketScript : MonoBehaviour {
 	void Update() {
 		// create rocket piece by piece (if no piece spanwed yet or last piece arrived at bottom (?)
 		if (parts.Count < spawnParts.Length && (!lastSpawnedPart || transform.position.y - lastSpawnedPart.transform.position.y > partSpawnDistance)) {
-			lastSpawnedPart = Instantiate(spawnParts[parts.Count], partSpawn.transform.position, Quaternion.identity) as GameObject;
-			lastSpawnedPart.transform.SetParent(transform);
-			lastSpawnedPart.GetComponent<SpriteRenderer>().sortingLayerName = "UI Part";
+			var nextPart = Instantiate(spawnParts[parts.Count], partSpawn.transform.position, Quaternion.identity) as GameObject;
+			nextPart.GetComponent<PartScript> ().collectable = false;
+			nextPart.transform.SetParent(transform);
+			nextPart.GetComponent<SpriteRenderer>().sortingLayerName = "UI Part";
 			
-			parts.Add(lastSpawnedPart.GetComponent<PartScript>());
+			parts.Add(nextPart.GetComponent<PartScript>());
+
+			lastSpawnedPart = nextPart;
 		}
 	}
 	

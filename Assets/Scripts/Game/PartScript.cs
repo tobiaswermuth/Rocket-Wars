@@ -6,6 +6,8 @@ public class PartScript : MonoBehaviour {
 	private SpriteRenderer spriteRenderer;
 	[SerializeField]
 	public string partIdentifier = "";
+	[SerializeField]
+	public bool collectable = true;
 
 	public bool collected = false;
 

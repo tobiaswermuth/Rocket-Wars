@@ -99,33 +99,35 @@ public class ShipScript : MonoBehaviour {
 	void partCollision(Collider2D partCollider) {
 		PartScript levelPart = partCollider.gameObject.GetComponent<PartScript>();
 
-		PlayerScript playerToGetPart = null;
-		foreach (PlayerScript player in players) {
-			GameObject pRocketPart = player.rocket.findNextPartWithIdentifier(levelPart.partIdentifier);
-			if (pRocketPart) {
-				if (playerToGetPart == null || player.rocket.remainingParts().Count > playerToGetPart.rocket.remainingParts().Count) {
-					playerToGetPart = player;
+		if (levelPart.collectable) {
+			PlayerScript playerToGetPart = null;
+			foreach (PlayerScript player in players) {
+				GameObject pRocketPart = player.rocket.findNextPartWithIdentifier (levelPart.partIdentifier);
+				if (pRocketPart) {
+					if (playerToGetPart == null || player.rocket.remainingParts ().Count > playerToGetPart.rocket.remainingParts ().Count) {
+						playerToGetPart = player;
+					}
 				}
 			}
-		}
 
-		if (playerToGetPart != null) {
-			RocketScript rocket = playerToGetPart.rocket;
-			GameObject rocketPart = rocket.findNextPartWithIdentifier (levelPart.partIdentifier);
-			if (rocketPart != null) {
-				rocketPart.GetComponent<PartScript> ().collected = true;
-				GameObject nextPart = rocket.findNextPart ();
-				if (nextPart) {
-					Vector3 markerPosition = rocket.marker.transform.position;
-					markerPosition.y = nextPart.transform.position.y;
-					rocket.marker.transform.position = markerPosition;
-				} else {
-					win (playerToGetPart);
+			if (playerToGetPart != null) {
+				RocketScript rocket = playerToGetPart.rocket;
+				GameObject rocketPart = rocket.findNextPartWithIdentifier (levelPart.partIdentifier);
+				if (rocketPart != null) {
+					rocketPart.GetComponent<PartScript> ().collected = true;
+					GameObject nextPart = rocket.findNextPart ();
+					if (nextPart) {
+						Vector3 markerPosition = rocket.marker.transform.position;
+						markerPosition.y = nextPart.transform.position.y;
+						rocket.marker.transform.position = markerPosition;
+					} else {
+						win (playerToGetPart);
+					}
 				}
 			}
-		}
 
-		Destroy(partCollider.gameObject);
+			Destroy (partCollider.gameObject);
+		}
 	}
 
 	public PlayerScript randomPlayer() {
