@@ -100,6 +100,8 @@ public class ShipScript : MonoBehaviour {
 				if (pRocketPart) {
 					if (playerToGetPart == null || player.rocket.remainingParts ().Count > playerToGetPart.rocket.remainingParts ().Count) {
 						playerToGetPart = player;
+					} else if (player.rocket.remainingParts ().Count == playerToGetPart.rocket.remainingParts ().Count) {
+						playerToGetPart = randomPlayer ();
 					}
 				}
 			}
