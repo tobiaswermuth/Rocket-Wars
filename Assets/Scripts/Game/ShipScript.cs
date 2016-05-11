@@ -4,8 +4,6 @@ using System.Collections;
 public class ShipScript : MonoBehaviour {
 	[SerializeField]
 	private Rigidbody2D myRigidbody;
-	[SerializeField]
-	public GameObject tutorial;
 
 	[SerializeField]
 	private int maxAngle = 90;
@@ -68,10 +66,6 @@ public class ShipScript : MonoBehaviour {
 			Mathf.Cos(Mathf.Deg2Rad * shipAngle));
 
 		myRigidbody.AddForceAtPosition(forceDirection * strength, forcePosition);
-
-		if (tutorial != null) {
-			Destroy (tutorial);
-		}
 	}
 	
 	void win(PlayerScript player) {

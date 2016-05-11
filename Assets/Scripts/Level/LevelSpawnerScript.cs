@@ -10,6 +10,8 @@ public class LevelSpawnerScript : MonoBehaviour {
 	private bool spawnUntilCollector;
 	[SerializeField]
 	private GameObject collector;
+	[SerializeField]
+	private GameObject firstSpawnPosition;
 	
 	private GameObject nextLevelObject;
 	private GameObject lastLevelObject;
@@ -33,7 +35,11 @@ public class LevelSpawnerScript : MonoBehaviour {
 				nextPosition.y += lastLevelObject.GetComponent<BoxCollider2D>().size.y/2;
 				nextPosition.y += levelDistance;
 			} else {
-				nextPosition = transform.position;
+				if (firstSpawnPosition != null) {
+					nextPosition = firstSpawnPosition.transform.position;
+				} else {
+					nextPosition = transform.position;
+				}
 			}
 			
 			if (nextLevelObject) {
