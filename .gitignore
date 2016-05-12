@@ -5,6 +5,7 @@ Temp/
 Library/
 Assets/EditorAutoSave*
 iOS/
+Android/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -20,6 +21,7 @@ obj/
 *.user
 *.unityproj
 *.booproj
+*.keystore
 
 # ============ #
 # OS generated #
